@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presentazione Azienda – Esempio</title>
+  <style>
+    /* Reset di base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      color: #222;
+      background-color: #f5f5f7;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* Layout generale */
+    header {
+      background: linear-gradient(135deg, #0b63ce, #103f91);
+      color: white;
+      padding: 18px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      padding: 6px 0;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-links a:hover {
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-small {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      background-color: rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-small:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+      transform: translateY(-1px);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* Hero / introduzione */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 32px;
+      align-items: center;
+      padding: 32px 24px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      margin-top: 24px;
+      margin-bottom: 40px;
+    }
+
+    .hero-text h1 {
+      font-size: 2.1rem;
+      margin-bottom: 12px;
+      color: #0b2147;
+    }
+
+    .hero-text p {
+      font-size: 0.98rem;
+      margin-bottom: 18px;
+      color: #4b5563;
+    }
+
+    .hero-highlight {
+      display: inline-block;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+      transition: transform 0.1s, box-shadow 0.1s, opacity 0.15s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(37, 99, 235, 0.4);
+      opacity: 0.97;
+    }
+
+    .btn-outline {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background-color: white;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .btn-outline:hover {
+      background-color: #f3f4f6;
+      border-color: #9ca3af;
+      transform: translateY(-1px);
+    }
+
+    .hero-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .hero-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: #e0f2fe;
+      color: #0369a1;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .hero-image {
+      background: radial-gradient(circle at top, #60a5fa, #1e3a8a);
+      border-radius: 16px;
+      padding: 18px;
+      color: white;
+      position: relative;
+      min-height: 220px;
+      overflow: hidden;
+    }
+
+    .hero-image h2 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+      opacity: 0.95;
+    }
+
+    .hero-image p {
+      font-size: 0.82rem;
+      opacity: 0.82;
+    }
+
+    .hero-tag {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-card {
+      position: absolute;
+      bottom: 18px;
+      right: 18px;
+      left: 18px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background-color: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.78rem;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background-color: #22c55e;
+      margin-right: 6px;
+    }
+
+    /* Sezioni */
+    section {
+      margin-bottom: 40px;
+    }
+
+    h2.section-title {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    /* Chi siamo */
+    .about-wrapper {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 24px;
+    }
+
+    .about-text p {
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin-bottom: 10px;
+    }
+
+    .about-highlight {
+      padding: 12px 14px;
+      border-left: 3px solid #2563eb;
+      background-color: white;
+      border-radius: 0 12px 12px 0;
+      font-size: 0.9rem;
+      color: #374151;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+      margin-top: 8px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.03);
+    }
+
+    .stat-card .value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .stat-card .label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    /* Servizi */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .service-card {
+      background-color: white;
+      border-radius: 14px;
+      padding: 16px 16px 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+      border: 1px solid #e5e7eb;
+    }
+
+    .service-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .service-card h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+
+    .service-card p {
+      font-size: 0.85rem;
+      color: #4b5563;
+      margin-bottom: 10px;
+    }
+
+    .service-meta {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    /* Call to action / Contatti */
+    .cta {
+      margin-top: 14px;
+      padding: 18px 18px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0f172a, #1f2937);
+      color: white;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .cta p {
+      font-size: 0.9rem;
+      opacity: 0.86;
+    }
+
+    .cta h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .cta-info {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .cta-info strong {
+      display: block;
+      font-size: 0.88rem;
+    }
+
+    .cta-info span {
+      display: block;
+      margin-top: 4px;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 20px 26px;
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    /* Responsivo */
+    @media (max-width: 900px) {
+      .hero,
+      .about-wrapper,
+      .cta {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 22px 18px;
+      }
+
+      .hero-image {
+        order: -1;
+        min-height: 200px;
+      }
+
+      header {
+        padding: 14px 20px;
+      }
+
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding-inline: 14px;
+      }
+
+      .hero-text h1 {
+        font-size: 1.6rem;
+      }
+
+      .nav-links {
+        font-size: 0.85rem;
+        gap: 12px;
+      }
+
+      .hero {
+        margin-top: 16px;
+        margin-bottom: 26px;
+      }
+
+      .cta {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header / Navbar -->
+  <header>
+    <nav class="nav">
+      <div class="logo">LinearLEAD Automation</div>
+      <div class="nav-links">
+        <a href="#chi-siamo">Chi siamo</a>
+        <a href="#servizi">Soluzioni</a>
+        <a href="#contatti">Contatti</a>
+        <button class="btn-small">Richiedi info</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-text">
+        <div class="hero-highlight">Automazione di fine linea</div>
+        <h1>Soluzioni di pallettizzazione progettate su problemi reali.</h1>
+        <p>
+          Progettiamo e realizziamo pallettizzatori e sistemi di movimentazione
+          dedicati al tuo fine linea produttivo. Partiamo dalle tue esigenze,
+          non da un catalogo standard, per garantire efficienza, continuità e
+          sicurezza.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-primary">Parla con un tecnico</button>
+          <button class="btn-outline">Scarica la brochure</button>
+        </div>
+        <div class="hero-badge-row">
+          <span class="hero-badge">+15 anni di esperienza</span>
+          <span>Progetti sviluppati ogni giorno al fianco dei produttori</span>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <div class="hero-tag">Pallettizzatore in azione</div>
+        <h2>Il cuore del tuo fine linea</h2>
+        <p>
+          Dal prodotto in uscita dalla linea fino al pallet pronto per la
+          spedizione: un unico sistema coordinato, progettato su misura per il
+          tuo layout.
+        </p>
+
+        <div class="hero-card">
+          <div>
+            <div><span class="dot"></span>Sistema attivo</div>
+            <div style="font-size:0.75rem;opacity:0.75;">
+              24/7 senza presidio continuo dell’operatore
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem;opacity:0.7;">OEE stimata</div>
+            <strong style="font-size:1rem;">+18%</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chi siamo -->
+    <section id="chi-siamo">
+      <h2 class="section-title">Chi siamo</h2>
+      <p class="section-subtitle">
+        Un team italiano che progetta pallettizzatori ogni giorno, partendo
+        dalle sfide concrete dei reparti produttivi.
+      </p>
+
+      <div class="about-wrapper">
+        <div class="about-text">
+          <p>
+            Non ci limitiamo a fornire una macchina che “impila scatole”.
+            Progettiamo il cuore del tuo fine linea: un sistema che dialoga con
+            la linea esistente, ottimizza i flussi e semplifica il lavoro degli
+            operatori.
+          </p>
+          <p>
+            Ogni progetto nasce da un’analisi approfondita del contesto:
+            caratteristiche del prodotto, layout disponibile, volumi, turni, e
+            livello di automazione desiderato. Da qui sviluppiamo una soluzione
+            tecnica che integra meccanica, elettronica e software.
+          </p>
+          <div class="about-highlight">
+            “Per noi il pallettizzatore non è un prodotto da catalogo, ma un
+            sistema che deve risolvere problemi reali: ingombri ridotti,
+            lotti variabili, cambi formato rapidi e sicurezza per chi lavora in
+            produzione.”
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="value">+120</div>
+            <div class="label">impianti installati in Europa</div>
+          </div>
+          <div class="stat-card">
+            <div class="value">15+</div>
+            <div class="label">anni di esperienza nel fine linea</div>
+          </div>
+          <div class="stat-card">
+            <div class="value">8 sett.</div>
+            <div class="label">lead time medio per progetto standard</div>
+          </div>
+          <div class="stat-card">
+            <div class="value">98%</div>
+            <div class="label">ricambi disponibili in 48 ore</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Servizi / soluzioni -->
+    <section id="servizi">
+      <h2 class="section-title">Cosa facciamo</h2>
+      <p class="section-subtitle">
+        Dai pallettizzatori compatti per spazi ridotti alle linee complete
+        multimateriale, includendo integrazione software e assistenza.
+      </p>
+
+      <div class="services-grid">
+        <article class="service-card">
+          <div class="service-tag">Progettazione</div>
+          <h3>Pallettizzatori su misura</h3>
+          <p>
+            Sistemi cartesiani, antropomorfi o ibridi, dimensionati in base a
+            portata, ciclo e layout disponibili. Possibilità di utilizzare il
+            vostro pacchetto di motorizzazione con flange di interfaccia
+            dedicate.
+          </p>
+          <div class="service-meta">
+            • Analisi del fine linea <br />
+            • Studio layout 2D/3D <br />
+            • Adattamento a impianti esistenti
+          </div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-tag">Integrazione</div>
+          <h3>Software e supervisione</h3>
+          <p>
+            Integrazione con PLC, sistemi MES e portali aziendali per il
+            monitoraggio dei dati di produzione, allarmi e storico cicli.
+          </p>
+          <div class="service-meta">
+            • Scambio dati in tempo reale<br />
+            • Reportistica personalizzata<br />
+            • Teleassistenza remota
+          </div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-tag">Supporto</div>
+          <h3>Installazione e assistenza</h3>
+          <p>
+            Dalla messa in servizio alla formazione degli operatori, fino al
+            servizio post-vendita e agli upgrade futuri dell’impianto.
+          </p>
+          <div class="service-meta">
+            • Avviamento in campo<br />
+            • Formazione mirata<br />
+            • Contratti di manutenzione
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contatti / CTA -->
+    <section id="contatti">
+      <div class="cta">
+        <div>
+          <h3>Raccontaci il tuo fine linea.</h3>
+          <p>
+            Che si tratti di un nuovo impianto o dell’aggiornamento di una
+            linea esistente, partiamo sempre da una chiacchierata tecnica.
+            Inviaci layout, foto o semplicemente una descrizione del problema:
+            ti proporremo una prima idea di soluzione.
+          </p>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn-primary">Richiedi una consulenza</button>
+            <button class="btn-outline">Invia una mail</button>
+          </div>
+        </div>
+        <div class="cta-info">
+          <strong>Contatti diretti</strong>
+          <span>Email: info@linearlead-automation.it</span>
+          <span>Tel: +39 0123 456 789</span>
+          <span>Orari: Lun–Ven, 8:30–18:00</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 LinearLEAD Automation – Pagina di presentazione di esempio.
+  </footer>
+</body>
+</html>
