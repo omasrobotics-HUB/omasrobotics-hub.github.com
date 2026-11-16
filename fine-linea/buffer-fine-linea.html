@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il buffer non è magazzino: il polmone del fine linea si dimensiona in minuti</title>
+<meta name="description" content="Il buffer di fine linea non si misura in metri di nastro né in numero di colli: si misura in minuti di autonomia. Come si dimensiona un accumulo che assorbe le micro-fermate senza diventare magazzino intermedio.">
+<link rel="canonical" href="https://omasrobotics-hub.github.io/fine-linea/buffer-fine-linea.html">
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.65; color: #222; max-width: 720px; margin: 0 auto; padding: 24px 18px 48px; background: #fdfdfa; }
+  h1 { font-size: 1.75em; line-height: 1.25; margin-bottom: 0.4em; }
+  h2 { font-size: 1.25em; margin-top: 1.6em; }
+  .data { color: #777; font-size: 0.9em; margin-bottom: 1.8em; }
+  a { color: #1a5fb4; }
+  blockquote { border-left: 3px solid #ccc; margin: 1.2em 0; padding: 0.2em 0 0.2em 1em; color: #444; }
+</style>
+</head>
+<body>
+
+<h1>Il buffer non è magazzino: il polmone del fine linea si dimensiona in minuti</h1>
+<p class="data">Appunti di automazione &middot; novembre 2026</p>
+
+<p>C'è una domanda che sento fare spesso, quando si disegna un fine linea: «quanto buffer ci mettiamo?» E la risposta, nove volte su dieci, arriva in metri. Tre metri di nastro, cinque metri di rulliera, «una ventina di colli, dai». È la risposta sbagliata data con l'unità di misura sbagliata. Un buffer non si dimensiona in metri e nemmeno in colli: si dimensiona in minuti. I minuti di autonomia che regala alla macchina a valle quando quella a monte si ferma — e a quella a monte quando è la valle a bloccarsi.</p>
+
+<p>Il buffer è il polmone della linea. Non produce niente, non trasforma niente: respira. Assorbe le variazioni di flusso che in una linea reale sono la norma, non l'eccezione, e le restituisce quando serve. Chi lo tratta da magazzino intermedio — un posto dove i colli «stanno» — ne fa un costo. Chi lo dimensiona sui minuti lo trasforma nella polizza assicurativa più economica dell'impianto.</p>
+
+<h2>Blocking e starving: i due modi in cui una linea si ferma senza guasti</h2>
+
+<p>Le linee si fermano in due modi che non compaiono in nessun registro guasti. Il primo si chiama starving: la macchina a valle è ferma perché è affamata, i colli non arrivano, la stazione a monte si è inceppata per un minuto e quel minuto si è propagato intatto fino in fondo. Il secondo è il blocking: la macchina a monte è ferma perché è bloccata, non ha dove mettere il prodotto, la stazione a valle è in cambio formato e tutto quello che sta prima deve aspettare con le mani in mano.</p>
+
+<p>Nessuno dei due è un guasto. Sono fenomeni di accoppiamento: due macchine perfette, collegate in modo rigido, si trasmettono ogni disturbo a vicenda. Il buffer è l'elemento di disaccoppiamento: rompe la rigidità del collegamento e fa sì che un disturbo da una parte non diventi un fermo dall'altra. Nella letteratura di produzione è un problema studiato da decenni — lo chiamano Buffer Allocation Problem — ma in reparto la teoria si riduce a una domanda sola: quanti minuti di disturbo devo assorbire, e quanto spesso arrivano?</p>
+
+<h2>La regola dei minuti: da due a cinque, e perché</h2>
+
+<p>La regola pratica che si usa in progetto dice che un sistema di accumulo dovrebbe contenere da due a cinque minuti di produzione. Non è un numero magico: è la fotografia delle micro-fermate tipiche. La maggior parte dei fermi reali di una linea di confezionamento dura meno di tre minuti — un sensore che perde una lettura, un'etichetta storta, un collo girato male, l'operatore che ricarica un consumabile. Se il buffer copre quei tre minuti, la macchina a valle non si accorge di niente: continua a lavorare sul polmone, e quando la monte riparte nessuno ha perso un ciclo.</p>
+
+<p>Facciamo il conto su una linea concreta, perché è lì che i metri ingannano. Trenta colli al minuto, micro-fermate tipiche da tre minuti: servono novanta colli di accumulo. Novanta colli di cartoni da 40 centimetri, in fila indiana, fanno trentasei metri di nastro. Trentasei metri nessuno li mette — e infatti i buffer veri non sono nastri lunghi, sono tavole di accumulo, spirali, sistemi che impacchettano i colli in poco spazio. Ma il conto va fatto così, partendo dai minuti e dalla cadenza, non dal buco rimasto libero nel layout. Ho visto buffer «dimensionati» riempiendo lo spazio tra due colonne: un metro e mezzo, quaranta secondi di autonomia. Tanto valeva non metterlo: quaranta secondi non assorbono nemmeno lo starnuto di un sensore.</p>
+
+<h2>L'altro lato del conto: la velocità di restituzione</h2>
+
+<p>C'è un secondo numero che quasi nessuno mette nel conto, ed è quello che decide se il buffer funziona o fa solo scena: quando la macchina a monte riparte, il buffer è pieno e la linea deve smaltirlo. Se la stazione a valle lavora esattamente alla stessa cadenza media della monte, il polmone resta pieno per sempre — e al prossimo disturbo non c'è più spazio. La macchina a valle deve poter lavorare almeno un 10–20% più veloce della media, per recuperare il prodotto accumulato in un tempo ragionevole e riportare il buffer alla sua riserva di respiro.</p>
+
+<p>Questo è il motivo per cui certi fine linea «con il buffer» si fermano uguale: il polmone c'è, è dimensionato bene in minuti, ma il pallettizzatore a valle è tarato sulla stessa cadenza della linea e non recupera mai. Il buffer va pensato come un sistema a tre numeri — autonomia in minuti, cadenza di linea, margine di recupero a valle — e se uno dei tre manca, gli altri due non bastano.</p>
+
+<h2>Troppo grande è un errore quanto troppo piccolo</h2>
+
+<p>L'istinto, dopo il primo fermo doloroso, è esagerare: buffer enorme, «così non ci pensiamo più». Ma un buffer sovradimensionato occupa spazio prezioso senza portare vantaggi reali, e ne porta di negativi: i colli ci restano dentro più a lungo (un problema per i prodotti con una sequenza o una scadenza), gli inceppamenti dentro un accumulo grande sono più difficili da vedere e da risolvere, e il capitale immobilizzato in prodotto fermo cresce. Soprattutto: un polmone troppo grande nasconde i problemi invece di assorbirli. La linea sembra andare, l'OEE sembra a posto, ma la macchina a monte si ferma dieci volte a turno e nessuno lo sa, perché il buffer ha coperto tutto. Il disturbo cronico va curato alla sorgente — è il discorso che facevo in <a href="/fine-linea/colli-di-bottiglia-fine-linea.html">la mappa dei tre colli di bottiglia del fine linea</a> — non anestetizzato con metri di accumulo.</p>
+
+<p>E c'è il capitolo formato, che chi vende accumuli tende a dimenticare: un sistema di accumulo viene dimensionato sui parametri reali del prodotto — peso, rigidità, dimensioni della confezione. Cambi formato, passando a un packaging più leggero o più flessibile, e il comportamento dentro il buffer cambia: i colli si dispongono diversamente, la capacità effettiva non è più quella di targa, gli inceppamenti tornano. Flessibile non significa che un unico setup vada bene per tutto: significa che il buffer va riadattato e riverificato a ogni cambio significativo, come qualsiasi altra stazione della linea.</p>
+
+<h2>Dove si mette: in layout, non in retrofit</h2>
+
+<p>Ultimo punto, quello pratico. Il buffer va previsto in fase di layout, nel punto strategico della linea — tra la stazione più nervosa e quella più costosa da fermare, di solito — e non aggiunto come toppa quando i problemi sono già evidenti. In retrofit lo spazio non c'è mai, le quote non tornano, e si finisce con l'accumulo messo dove stava comodo invece che dove serviva. Un metro di buffer nel punto giusto vale più di cinque nel punto sbagliato, perché il disaccoppiamento funziona solo se sta in mezzo alle due macchine che deve separare.</p>
+
+<p>Riassunto da tenere appeso in ufficio tecnico: il buffer si misura in minuti di autonomia, si verifica con la velocità di recupero di valle, si ridimensiona quando cambia il formato, e si disegna nel layout prima che la linea esista. Chi lo misura in metri sta comprando nastro. Chi lo misura in minuti sta comprando continuità — che è poi l'unica cosa che un fine linea deve garantire, dal primo all'ultimo pallet del turno. Il resto — nastri, tavole, spirali — è solo il modo in cui quei minuti prendono forma nello spazio che il capannone concede, tra un <a href="https://it.wikipedia.org/wiki/Magazzino">magazzino</a> che aspetta il prodotto finito e una produzione che non può permettersi di aspettare niente.</p>
+
+<nav>
+<h2>Altri appunti</h2>
+<ul>
+<li><a href="/fine-linea/colli-di-bottiglia-fine-linea.html">il collo di bottiglia si misura, non si compra</a></li>
+<li><a href="/">l'indice di questi appunti di automazione, con le pagine in ordine</a></li>
+</ul>
+</nav>
+
+</body>
+</html>
