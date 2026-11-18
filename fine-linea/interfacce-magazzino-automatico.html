@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- NOTA TECNICA — harvest SERP (query: «interfaccia pallettizzatore magazzino automatico WMS»; «integrazione PLC WCS trasloelevatore segnali handshake SSCC etichetta pallet»). Termini raccolti e integrati nel testo: WMS e WCS, PLC, handshake, watchdog e heartbeat, stati del comando (richiesto, riconosciuto, in esecuzione, completato), telegramma di interfaccia, missione/ordine di trasporto, stazione di identificazione, codice a barre, SSCC, etichetta del pallet stampata in linea, trasloelevatore, Industrial Ethernet, integrazione con ERP e MES, cicli di entrata e uscita dei pallet, interblocchi e sequenze locali, contratto di interfaccia, un solo scrittore per campo.
+FOTO: Dettaglio-pinza-di-presa-robot.jpg (lotto 2026-11-13, libera: nessun utilizzo registrato; l'altra candidata Robot-cartesiano-2-assi-YZ.jpg è impegnata in questo giro sul pin 30 Pinterest) — alt: «Pinza a C in alluminio su attrezzatura di collaudo, vista dall'alto: la testa di presa che chiude l'ultimo ciclo prima che il pallet passi al magazzino». -->
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il pallettizzatore parla col magazzino: segnali, handshake e dati che mancano</title>
+<meta name="description" content="Quattro segnali puliti, un handshake con stati veri e un'identità leggibile per ogni pallet: cosa devono scambiarsi davvero il PLC dell'isola di pallettizzazione e il WCS del magazzino automatico per non fermarsi a vicenda.">
+<link rel="canonical" href="https://omasrobotics-hub.github.io/fine-linea/interfacce-magazzino-automatico.html">
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.65; color: #222; max-width: 720px; margin: 0 auto; padding: 24px 18px 48px; background: #fdfdfa; }
+  h1 { font-size: 1.75em; line-height: 1.25; margin-bottom: 0.4em; }
+  h2 { font-size: 1.25em; margin-top: 1.6em; }
+  .data { color: #777; font-size: 0.9em; margin-bottom: 1.8em; }
+  a { color: #1a5fb4; }
+  blockquote { border-left: 3px solid #ccc; margin: 1.2em 0; padding: 0.2em 0 0.2em 1em; color: #444; }
+</style>
+</head>
+<body>
+
+<h1>Il pallettizzatore parla col magazzino: segnali, handshake e dati che mancano</h1>
+<p class="data">Appunti di automazione &middot; novembre 2026</p>
+
+<p>Ho visto un'isola di pallettizzazione che andava come un orologio, e un magazzino automatico pure. In mezzo, sei pallet in coda sulla rulliera di uscita. Il pallettizzatore produceva, il <a href="https://it.wikipedia.org/wiki/Trasloelevatore">trasloelevatore</a> era libero, e nessuno dei due sapeva che l'altro esisteva: la missione di prelievo la creava a mano l'operatore, a fine turno, leggendo le etichette una a una. Due macchine perfette e un confine presidiato da un uomo con un terminale. Il problema, quasi mai, è la meccanica. È la conversazione.</p>
+
+<p>Tra il PLC dell'isola e il WCS del magazzino non serve un cavo più grosso: serve un linguaggio più povero e più preciso. Le specifiche che leggo sono elenchi di quaranta, sessanta bit: «per sicurezza, scambiamoci tutto». Quelle che funzionano stanno in quattro segnali veri, un'identità leggibile e un handshake che dice la verità sullo stato delle cose. Il resto è nebbia che qualcuno dovrà mantenere.</p>
+
+<img src="Dettaglio-pinza-di-presa-robot.jpg" alt="Pinza a C in alluminio su attrezzatura di collaudo, vista dall'alto: la testa di presa che chiude l'ultimo ciclo prima che il pallet passi al magazzino">
+
+<h2>Quattro segnali veri, e la nebbia intorno</h2>
+
+<p>Il primo segnale è il più ovvio e il più tradito: <em>pallet pronto</em>. Non «la macchina sta lavorando», ma «il ciclo è chiuso, il carico è completo, filmato, stabile, nella baia di uscita». Ho visto un bit di pronto che restava alto a baia mezza vuota, legato al consenso del nastro, non alla fine del ciclo: il trasloelevatore arrivava, trovava mezzo pallet e tornava a vuoto — un ciclo di entrata e uscita perso per tutti.</p>
+
+<p>Poi il consenso al contrario: il magazzino che dice «posso venire a prenderlo», perché baia e trasloelevatore potrebbero essere occupati. Terzo: la missione, assegnata e poi dichiarata compiuta con la destinazione, così produzione e giacenza chiudono sullo stesso numero. Quarto, l'allarme, ma con un codice: di carico (sagoma fuori profilo, pallet danneggiato), di baia, di comunicazione. Un bit unico «allarme generico» costringe qualcuno a camminare fino alla macchina per scoprire che era un'etichetta storta. In un impianto ne ho contati ventisette, e cinque letti davvero: gli altri ventidue erano lì «per il futuro» — e il futuro, in automazione, è il nome dei bit che nessuno collauda.</p>
+
+<h2>L'handshake non è un impulso: è una conversazione con gli stati</h2>
+
+<p>Il modo più fragile di dirsi le cose è l'impulso: un bit che sale per duecento millisecondi e significa «fatto». Se in quei duecento millisecondi il WCS sta riavviando o il PLC è in stop per un cambio programma, il messaggio è perso e le due macchine restano convinte di cose diverse. L'handshake fatto bene ha degli stati: il WCS scrive la missione — identità del carico, baia di prelievo, destinazione — il PLC la riconosce, la esegue, la dichiara completata con un codice di esito: richiesto, riconosciuto, in esecuzione, completato — quattro stati che valgono più di quaranta bit.</p>
+
+<p>E c'è il watchdog, il battito che i due sistemi si scambiano. Ma dimostra solo che il canale respira, non che la coda delle missioni si muove. Ho visto un WCS tranquillo perché il battito arrivava puntuale, mentre la missione numero 204 veniva eseguita dal PLC due volte: una prima dell'interruzione e una dopo, rispedita al riavvio come fosse nuova. Risultato: un pallet prelevato due volte nella testa del sistema e una cella che non tornava più. La regola che lo evita è noiosa e assoluta: un solo scrittore per ogni campo, un'identità stabile per ogni missione, e un riavvio non deve mai trasformare un comando vecchio in uno nuovo. È lo stesso principio del <a href="/fine-linea/buffer-fine-linea.html">buffer dimensionato in minuti</a>: là i flussi dei colli, qui le decisioni — perché un disturbo non diventi un fermo, o un fantasma, dall'altra parte.</p>
+
+<h2>Un pallet senza nome, per il magazzino, non esiste</h2>
+
+<p>Tutto l'handshake del mondo non serve se il carico è anonimo. Il magazzino automatico ragiona per identità: quel nome nasce in linea, a fine ciclo, quando l'etichetta viene stampata e applicata sul pallet finito, e ogni unità di carico deve averne uno leggibile da una macchina. Il codice più usato è l'SSCC, diciotto cifre che identificano il collo; alla stazione di identificazione all'ingresso, un lettore di codice a barre lo legge e il WCS abbina il corpo fisico alla sua scheda: articolo, lotto, quantità, data. Se la lettura fallisce, il pallet si ferma in baia di controllo e — dettaglio che si scopre di venerdì sera — qualcuno deve andarci a piedi.</p>
+
+<p>Mi è capitato un pallet entrato senza lettura, stoccato a mano dal carrellista in una posizione libera e mai registrato: per il WMS era ancora in produzione, per la produzione era già spedito. Una notte di inventario per ritrovarlo, tre corsie più in là. Da allora la penso così: l'identità non è un accessorio dell'interfaccia, è la prima riga del contratto. Senza, i segnali dicono che qualcosa si è mosso, ma nessuno sa cosa.</p>
+
+<h2>Quando l'interfaccia è un foglio Excel, o peggio una telefonata</h2>
+
+<p>Ci sono impianti dove l'interfaccia tra isola e magazzino è una persona: l'operatore trascrive il lotto in un foglio condiviso e il magazziniere crea la missione quando passa. Funziona? Finché i ritmi sono da turno tranquillo e le persone sono sempre le stesse, sì. Poi arriva il picco: un pallet ogni quarantacinque secondi, la rulliera di uscita ne tiene sei, il foglio viene aggiornato ogni mezz'ora — e l'isola si blocca con l'uscita piena (il magazzino, nel frattempo, è fermo senza missioni: affamato e bloccato nello stesso impianto, cinquanta metri più in là). E c'è l'errore di trascrizione, che non fa rumore: un lotto digitato male non ferma niente, spedisce il prodotto sbagliato.</p>
+
+<p>Il punto non è che Excel sia il nemico: un'interfaccia manuale ha due difetti strutturali — la latenza, il dato che arriva dopo il corpo, e l'assenza di stati: nessuno sa se la missione è stata vista, presa in carico, chiusa. In un impianto piccolo si può vivere così; ma è un presidio umano permanente, e va messo a budget, non spacciato per integrazione.</p>
+
+<h2>I dati minimi: un contratto di una pagina</h2>
+
+<p>Se dovessi scriverla su un foglio solo, e a volte l'ho fatto, metterei questo. L'identità del carico, l'SSCC, che non si negozia. Il contenuto in tre campi: articolo, lotto, quantità — quelli che servono al WMS per decidere dove va il pallet. La sagoma e il peso, almeno per classe: trasloelevatore e rulliere devono sapere se quel carico possono prenderlo. Lo stato del carico: completo o parziale, conforme o da controllare. E la missione con il suo esito, negli stati veri detti sopra. Ogni dato in più deve superare un esame: cambia una decisione a valle? Se no, è rumore che occupa banda e manutenzione.</p>
+
+<p>Dipende dal livello del magazzino: con un semiautomatico si può scambiare anche meno; con MES e tracciabilità spinta si scambierà di più, via Industrial Ethernet. Ma l'ossatura non cambia: quattro segnali onesti, un handshake che non mente, un nome per ogni pallet. Il pallettizzatore e il magazzino non devono parlarsi tanto. Devono parlarsi giusto — e quando uno dei due si ferma, l'altro deve saperlo dal filo, non dal silenzio in corsia.</p>
+
+<nav>
+<h2>Altri appunti</h2>
+<ul>
+<li><a href="/">appunti di automazione</a></li>
+<li><a href="/fine-linea/colli-di-bottiglia-fine-linea.html">il collo di bottiglia si misura, non si compra</a></li>
+<li><a href="/fine-linea/buffer-fine-linea.html">il buffer non è magazzino: si dimensiona in minuti</a></li>
+<li><a href="/fine-linea/manutenzione-assi-ambienti-difficili.html">la manutenzione degli assi dove l'aria non è pulita</a></li>
+<li><a href="/fine-linea/schema-di-carico-stabilita.html">lo schema di carico è geometria, non abitudine</a></li>
+</ul>
+</nav>
+
+</body>
+</html>
